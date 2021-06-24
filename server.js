@@ -1,47 +1,18 @@
 const express = require("express");
 const app = express();
 
-const client = require("./db-client");
+const dataRouter = require("./club-data-router");
 
-app.get("/facilities-data", async (req, res, next) => {
-    try {
-        const facilitiesQueryResult = await client.query(`SELECT * FROM cd.facilities;`);
-        res.send(facilitiesQueryResult.rows);
-    } catch (e) {
-        next(e);
-    }
+// 1
+app.use((req, res, next) => {
+    console.log("The method of the HTTP request message is " + req.method);
+    req.joe = true;
+    next();
 });
 
-app.get("/members-page", async (req, res, next) => {
+app.use(dataRouter);
 
-    const membersQueryResult = await client.query(`SELECT firstname, surname FROM cd.members`);
-    
-    const liElements = membersQueryResult.rows.map(eachRow => {
-        return `<li>${eachRow.firstname} ${eachRow.surname}</li>`;
-    }).join("");
-
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-            <head><title>Members Page ${membersQueryResult.rowCount}</title></head>
-            <style>
-                body {
-                    background: gray;
-                }
-                li {
-                    color: blanchedalmond;
-                }
-            </style>
-            <body>
-                <ul>
-                    ${liElements}
-                </ul>
-            </body>
-        </html>
-    `);
-
-});
-
+// 3
 app.use((err, req, res, next) => {
     res.status(500);
     res.send(err);
