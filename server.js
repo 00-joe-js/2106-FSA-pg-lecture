@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 
 const dataRouter = require("./club-data-router");
+const submissionRoutes = require("./submitting-routes");
 
 // 1
 app.use((req, res, next) => {
@@ -10,7 +11,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(dataRouter);
+app.use(express.urlencoded({extended: false}));
+// CREATE req.body
+
+app.use("/data", dataRouter);
+app.use(submissionRoutes);
 
 // 3
 app.use((err, req, res, next) => {
